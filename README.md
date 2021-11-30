@@ -1,1 +1,1 @@
-# nhl stats
+# nhl-stats-retriever  
