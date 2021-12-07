@@ -22,6 +22,7 @@ while True:
         print('\nYou have selected option 1: Retrieve current statistics for a particular player.')
         print(scraper.get_player_stats())
         print(NHLScraper.get_player_stats(scraper))
+        scraper.get_all_player_ids()
         break
 
     # elif (user_option == '2'):
