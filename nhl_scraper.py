@@ -2,6 +2,7 @@ from urllib.request import urlopen
 import urllib.parse, urllib.error
 import json
 import ssl
+import re
 
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
@@ -21,14 +22,13 @@ class NHLScraper:
                 break
 
         user_player_stats = self.all_players[(user_player_name, user_player_id)]
-        user_player_stats = Player(user_player_id, user_player_name)
-        player_position = user_player_stats.fetch_game_stats()
+        player_position = user_player_stats.fetch_game_stats(user_player_id, user_player_name)
 
         if(player_position == False):
-            print('No stats amassed for the current season.')
+            print('\nNo stats amassed for the current season for', user_player_name, user_player_id)
         else:
 
-            print('Showing player statistics for', user_player_name, user_player_id)
+            print('\nShowing player statistics for', user_player_name, user_player_id)
 
             if(player_position == 'G'):
                 print('Wins:', user_player_stats.wins)
@@ -65,10 +65,10 @@ class NHLScraper:
 
             for player in team_roster_js['roster']:
                 self.players_id_name_dict[player['person']['id']] = player['person']['fullName']
-                p = Player(player['person']['id'], player['person']['fullName'])
-                self.all_players[(player['person']['fullName'], player['person']['id'])] = p
+                self.all_players[(player['person']['fullName'], player['person']['id'])] = Player()
 
-
+            # print(list(self.players_id_name_dict.values()))
+            # break
             # players_per_team = 0
         #     for player in team_roster_js['roster']:
         #         player_id_name_list.append((player['person']['id'], player['person']['fullName']))
@@ -109,13 +109,16 @@ class Player:
     games = 0
 
 
-    def __init__(self, p_id, p_name):
-        self.player_id = p_id
-        self.player_name = p_name
+    # def __init__(self):
+        # print('player constructed')
+        # self.player_id = p_id
+        # self.player_name = p_name
         # print(self.player_id, 'is constructed')
         # print(self.player_name, 'is constructed')
 
-    def fetch_game_stats(self):
+    def fetch_game_stats(self, p_id, p_name):
+        self.player_id = p_id
+        self.player_name = p_name
 
         player_url = 'https://statsapi.web.nhl.com/api/v1/people/' + str(self.player_id)
         player_data = urlopen(player_url, context=ctx).read().decode()
@@ -148,3 +151,16 @@ class Player:
             self.games = stats_js['stats'][0]['splits'][0]['stat']['games']
 
             return self.position
+
+    def get_players_stats_regex(self, regex):
+        print(regex)
+
+        p = NHLScraper()
+
+        matching_regex = list()
+
+        for i in list(p.players_id_name_dict.values()):
+            if re.search(regex, i):
+                matching_regex.append(i)
+
+        return matching_regex
