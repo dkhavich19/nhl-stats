@@ -11,8 +11,34 @@ ctx.verify_mode = ssl.CERT_NONE
 
 class NHLScraper:
     all_players = dict()
-    all_p_list = list()
+    # all_p_list = list()
     players_id_name_dict = dict()
+
+    all_p_goals = dict()
+
+    def get_top_scorers(self):
+        # self.get_player_stats(player)
+        # player_goals_list = list(self.all_p_goals.values())
+        # player_goals_list.sort(reverse=True)
+        # print(player_goals_list[:10])
+
+        player_goals_list = list()
+
+        p = Player()
+
+        for p_name,p_id in (list(self.all_players.keys()))[:20]:
+            p.fetch_game_stats(p_id, p_name)
+            self.all_p_goals[(p_name, p_id)] = p.goals
+
+        for x,y in list(self.all_p_goals.items()):
+            player_goals_list.append((y, x[0]))
+
+        player_goals_list.sort(reverse=True)
+
+        print('Showing top 10 goal scorers in the NHL for the 2021-2022 season:')
+
+        for i in player_goals_list[:10]:
+            print(i[1]+':',i[0])
 
     def get_player_stats(self, user_player_name):
 
@@ -45,7 +71,7 @@ class NHLScraper:
 
     def initialize_player_info(self):
 
-        print('\nLoading data, please wait...')
+        print('\nLoading data, please wait\n')
 
         teams_url = 'https://statsapi.web.nhl.com/api/v1/teams/'
 
@@ -56,6 +82,8 @@ class NHLScraper:
         players_per_team_list = list()
 
         list_id_name = list()
+        # p = Player()
+
 
         for team_id in allteams_js['teams']:
 
@@ -66,7 +94,8 @@ class NHLScraper:
             for player in team_roster_js['roster']:
                 self.players_id_name_dict[player['person']['id']] = player['person']['fullName']
                 self.all_players[(player['person']['fullName'], player['person']['id'])] = Player()
-
+                # p.fetch_game_stats(player['person']['id'], player['person']['fullName'])
+                # self.all_p_goals[(player['person']['fullName'], player['person']['id'])] = p.goals
             # print(list(self.players_id_name_dict.values()))
             # break
             # players_per_team = 0
@@ -85,6 +114,8 @@ class NHLScraper:
             #     players_per_team2 += 1
             #
             # players_per_team_list.append(players_per_team2)
+
+
 
 
 class Player:
@@ -115,6 +146,9 @@ class Player:
         # self.player_name = p_name
         # print(self.player_id, 'is constructed')
         # print(self.player_name, 'is constructed')
+
+    # def __lt__(self, other):
+
 
     def fetch_game_stats(self, p_id, p_name):
         self.player_id = p_id
@@ -153,7 +187,7 @@ class Player:
             return self.position
 
     def get_players_stats_regex(self, regex):
-        print(regex)
+        # print(regex)
 
         p = NHLScraper()
 
