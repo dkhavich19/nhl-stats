@@ -44,8 +44,14 @@ while True:
 
     elif (user_option == '3'):
         print('\nYou have selected option 3: Retrieve the top 10 scorers in the NHL right now.\n')
-        scraper.get_top_scorers()
+        scraper.get_top_scorers('')
 
-    # elif (user_option == '4'):
-    #     print('''\nYou have selected option 4: Retrieve the top 10 scorers in the NHL right now,
-    #                                 from a certain country.''')
+    elif (user_option == '4'):
+        print('''\nYou have selected option 4: Retrieve the top 10 scorers in the NHL right now,
+                                    from a certain country.''')
+
+        country_code = input('\nPlease enter a birth country: ')
+
+        scraper.get_top_scorers(country_code)
+
+        break

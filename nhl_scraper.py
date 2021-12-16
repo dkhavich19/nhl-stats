@@ -16,7 +16,7 @@ class NHLScraper:
 
     all_p_goals = dict()
 
-    def get_top_scorers(self):
+    def get_top_scorers(self, country):
         # self.get_player_stats(player)
         # player_goals_list = list(self.all_p_goals.values())
         # player_goals_list.sort(reverse=True)
@@ -26,16 +26,24 @@ class NHLScraper:
 
         p = Player()
 
-        for p_name,p_id in (list(self.all_players.keys()))[:20]:
+
+        for p_name,p_id in (list(self.all_players.keys()))[:]:
             p.fetch_game_stats(p_id, p_name)
-            self.all_p_goals[(p_name, p_id)] = p.goals
+            self.all_p_goals[(p_name, p_id)] = (p.goals, p.birth_country)
+
 
         for x,y in list(self.all_p_goals.items()):
-            player_goals_list.append((y, x[0]))
+            if(country == ''):
+                player_goals_list.append((y[0], x[0]))
+            elif(country == y[1]):
+                player_goals_list.append((y[0], x[0]))
 
         player_goals_list.sort(reverse=True)
 
-        print('Showing top 10 goal scorers in the NHL for the 2021-2022 season:')
+        if(country == ''):
+            print('Showing top 10 goal scorers in the NHL for the 2021-2022 season:\n')
+        elif(len(country) > 0):
+            print('Showing top 10 goal scorers in the NHL from', country, 'for the 2021-2022 season:\n')
 
         for i in player_goals_list[:10]:
             print(i[1]+':',i[0])
@@ -61,13 +69,14 @@ class NHLScraper:
                 print('Losses:', user_player_stats.losses)
                 print('gAA:', user_player_stats.gAA)
                 print('Shutouts', user_player_stats.shutouts)
-                print('Games:', user_player_stats.games)
             else:
                 print('Points:', user_player_stats.points)
                 print('Goals:', user_player_stats.goals)
                 print('Assists:', user_player_stats.assists)
                 print('Shots:', user_player_stats.shots)
-                print('Games:', user_player_stats.games)
+
+            print('Games:', user_player_stats.games)
+            print('Birth Country:', user_player_stats.birth_country)
 
     def initialize_player_info(self):
 
@@ -122,7 +131,7 @@ class Player:
 
     player_id = int()
     player_name = str()
-
+    birth_country = str()
     position = str()
 
     # stats for skaters
@@ -159,6 +168,7 @@ class Player:
         player_js = json.loads(player_data)
 
         self.position = player_js['people'][0]['primaryPosition']['code']
+        self.birth_country = player_js['people'][0]['birthCountry']
 
         stats_url_part1 = 'https://statsapi.web.nhl.com/api/v1/'
         stats_url_part2 = '/stats?stats=statsSingleSeason&season=20212022'
