@@ -17,20 +17,14 @@ class NHLScraper:
     all_p_goals = dict()
 
     def get_top_scorers(self, country):
-        # self.get_player_stats(player)
-        # player_goals_list = list(self.all_p_goals.values())
-        # player_goals_list.sort(reverse=True)
-        # print(player_goals_list[:10])
 
         player_goals_list = list()
 
         p = Player()
 
-
-        for p_name,p_id in (list(self.all_players.keys()))[:]:
+        for p_name,p_id in (list(self.all_players.keys()))[:20]:
             p.fetch_game_stats(p_id, p_name)
             self.all_p_goals[(p_name, p_id)] = (p.goals, p.birth_country)
-
 
         for x,y in list(self.all_p_goals.items()):
             if(country == ''):
@@ -87,13 +81,6 @@ class NHLScraper:
         team_data = urlopen(teams_url, context=ctx).read().decode()
         allteams_js = json.loads(team_data)
 
-        player_id_name_list = list()
-        players_per_team_list = list()
-
-        list_id_name = list()
-        # p = Player()
-
-
         for team_id in allteams_js['teams']:
 
             roster_url = teams_url + str(team_id['id']) + '/roster'
@@ -103,29 +90,6 @@ class NHLScraper:
             for player in team_roster_js['roster']:
                 self.players_id_name_dict[player['person']['id']] = player['person']['fullName']
                 self.all_players[(player['person']['fullName'], player['person']['id'])] = Player()
-                # p.fetch_game_stats(player['person']['id'], player['person']['fullName'])
-                # self.all_p_goals[(player['person']['fullName'], player['person']['id'])] = p.goals
-            # print(list(self.players_id_name_dict.values()))
-            # break
-            # players_per_team = 0
-        #     for player in team_roster_js['roster']:
-        #         player_id_name_list.append((player['person']['id'], player['person']['fullName']))
-        #         p2 = Player(player['person']['id'], player['person']['fullName'])
-        #         self.all_p_list.append(((player['person']['fullName'], player['person']['id']), p2))
-        #     #     players_per_team += 1
-        #     # players_per_team_list.append(players_per_team)
-
-
-            # players_per_team2 = 0
-            # for player in team_roster_js['roster']:
-            #     p = Player(player['person']['id'], player['person']['fullName'])
-            #     self.all_players[player['person']['fullName']] = p
-            #     players_per_team2 += 1
-            #
-            # players_per_team_list.append(players_per_team2)
-
-
-
 
 class Player:
 
@@ -197,8 +161,7 @@ class Player:
             return self.position
 
     def get_players_stats_regex(self, regex):
-        # print(regex)
-
+        
         p = NHLScraper()
 
         matching_regex = list()

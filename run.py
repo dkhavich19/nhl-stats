@@ -51,7 +51,4 @@ while True:
                                     from a certain country.''')
 
         country_code = input('\nPlease enter a birth country: ')
-
         scraper.get_top_scorers(country_code)
-
-        break
